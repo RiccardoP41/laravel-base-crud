@@ -37,6 +37,9 @@ class TeamController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+        if (empty($data['name']) || empty($data['fm']) || empty($data['fa'])) {
+            return back()->withInput();
+        }
         $teamNew = new Team;
         $teamNew->nome = $data['name'];
         $teamNew->fantamilioni = $data['fm'];
