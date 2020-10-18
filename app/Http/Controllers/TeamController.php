@@ -37,14 +37,22 @@ class TeamController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-        if (empty($data['name']) || empty($data['fm']) || empty($data['fa'])) {
-            return back()->withInput();
-        }
+
+        $request->validate([
+            'nome' => 'required|max:100',
+            'fantamilioni' => 'required|numeric|max:300',
+            'fantallenatore' => 'required|max:100',
+        ]);
+
         $teamNew = new Team;
-        $teamNew->nome = $data['name'];
-        $teamNew->fantamilioni = $data['fm'];
-        $teamNew->fantallenatore = $data['fa'];
-        $teamNew->save();
+        // $teamNew->nome = $data['nome'];
+        // $teamNew->fantamilioni = $data['fantamilioni'];
+        // $teamNew->fantallenatore = $data['fantallenatore'];
+        $teamNew->fill($data);
+        $saved = $teamNew->save();
+        if ($saved) {
+            return redirect()->route("teams.index");
+        }
     }
 
     /**
@@ -53,20 +61,26 @@ class TeamController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Team $team)
     {
-        //
+        return view('show',compact('team'));
     }
-
+    // _______________________________________
+    // public function show($id)
+    // {
+    //     $team = Team::find($id);
+    //     return view('show',compact('team'));
+    // }
+    // ____________________________________________
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Team $team)
     {
-        //
+        return view('create',compact('team'));
     }
 
     /**
@@ -76,9 +90,16 @@ class TeamController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Team $team)
     {
-        //
+        $data = $request->all();
+        $request->validate([
+            'nome' => 'required|max:100',
+            'fantamilioni' => 'required|numeric|max:300',
+            'fantallenatore' => 'required|max:100',
+        ]);
+        $team->update($data);
+        return view('show',compact('team'));
     }
 
     /**
@@ -87,8 +108,10 @@ class TeamController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Team $team)
     {
-        //
+        $team->delete();
+
+        return redirect()->route('teams.index');
     }
 }
