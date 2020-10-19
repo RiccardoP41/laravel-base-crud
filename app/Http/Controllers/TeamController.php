@@ -7,6 +7,12 @@ use App\Team;
 
 class TeamController extends Controller
 {
+
+    protected $validation = [
+        'nome' => 'required|max:100',
+        'fantamilioni' => 'required|numeric|max:300',
+        'fantallenatore' => 'required|max:100',
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -38,11 +44,7 @@ class TeamController extends Controller
     {
         $data = $request->all();
 
-        $request->validate([
-            'nome' => 'required|max:100',
-            'fantamilioni' => 'required|numeric|max:300',
-            'fantallenatore' => 'required|max:100',
-        ]);
+        $request->validate($this->validation);
 
         $teamNew = new Team;
         // $teamNew->nome = $data['nome'];
@@ -63,6 +65,9 @@ class TeamController extends Controller
      */
     public function show(Team $team)
     {
+        if(empty($team)){
+            abort(404);
+        }
         return view('show',compact('team'));
     }
     // _______________________________________
@@ -92,12 +97,11 @@ class TeamController extends Controller
      */
     public function update(Request $request, Team $team)
     {
+        if(empty($team)){
+            abort(404);
+        }
         $data = $request->all();
-        $request->validate([
-            'nome' => 'required|max:100',
-            'fantamilioni' => 'required|numeric|max:300',
-            'fantallenatore' => 'required|max:100',
-        ]);
+        $request->validate($this->validation);
         $team->update($data);
         return view('show',compact('team'));
     }
